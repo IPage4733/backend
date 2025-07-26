@@ -112,16 +112,6 @@ exports.io = new socket_io_1.Server(server, {
 // Serve static files from "build"
 app.use(express_1.default.static(path_1.default.join(__dirname, "build")));
 // cors
-app.use((0, cors_1.default)({
-    origin: [
-        'https://frontendtech-ten.vercel.app', // Add your frontend production URL
-        'http://localhost:3000', // For local development (optional)
-        'http://localhost:5173' // For local development (optional)
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    credentials: true, // Set to true if you are dealing with cookies or sessions
-}));
 // Configure express with proper types
 app.use(express_1.default.json({
     limit: "100mb", // Increase limit
@@ -156,11 +146,24 @@ const timeout = (req, res, next) => {
 };
 app.use(timeout);
 // Configure CORS
+const allowedOrigins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://frontendtech-ten.vercel.app"
+];
 app.use((0, cors_1.default)({
-    origin: ['http://localhost:3000', 'https://frontendtech-ten.vercel.app',], // Your frontend URL
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            console.error("Blocked by CORS:", origin);
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"]
 }));
 // Initialize all Socket.IO event handlers
 (0, sockets_1.default)(exports.io);
