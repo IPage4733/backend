@@ -140,11 +140,16 @@ connectToDatabase()
 app.use(express.static(path.join(__dirname, "build")));
 // cors
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'], // Add your frontend URLs
+  origin: [
+    'https://frontendtech-ten.vercel.app',  // Add your frontend production URL
+    'http://localhost:3000',                 // For local development (optional)
+    'http://localhost:5173'                  // For local development (optional)
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  credentials: false
+  credentials: true, // Set to true if you are dealing with cookies or sessions
 }));
+
 
 // Configure express with proper types
 app.use(
